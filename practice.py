@@ -241,7 +241,16 @@ def pool(bank, included=(), excluded=EXCLUDED, tracking=None):
     tags = included - history
     return [q for q in bank if not (excluded & (filters := filters_for(q, tracking))) and (not history or filters & history) and (not tags or filters & tags)]
 
-def filter_menu(bank, tracking, included, excluded):
+def load_filters(data):
+    filters = data.get("filters")
+    valid = lambda rows: isinstance(rows, list) and all(isinstance(t, list) and len(t) == 2 and t[0] in ("tag", "source", "history") and isinstance(t[1], str) and t[1].strip() for t in rows)
+    if not isinstance(filters, dict) or not all(valid(filters.get(key)) for key in ("included", "excluded")):
+        return set(), set(EXCLUDED)
+    included, excluded = (set(map(tuple, filters[key])) for key in ("included", "excluded"))
+    return included - excluded, excluded
+
+def filter_menu(data, included, excluded):
+    bank, tracking = data["questions"], data.get("tracking", {})
     counts, chosen = Counter(t for q in bank for t in filters_for(q, tracking)), 0
     filters = [("history", title) for title, _, _ in HISTORY] + sorted((t for t in counts if t[0] != "history"), key=lambda t: (t[0] != "tag", t[1]))
     while True:
@@ -260,13 +269,15 @@ def filter_menu(bank, tracking, included, excluded):
             excluded.discard(tag)
             if sign and states[chosen] != sign:
                 (excluded if sign == "-" else included).add(tag)
+        data["filters"] = {key: [list(t) for t in sorted(values)] for key, values in (("included", included), ("excluded", excluded))}
+        save(data)
         if sign == "next":
             return
 
 def main():
     data = json.loads(BANK.read_text(encoding="utf-8-sig"))
     bank, tracking = data["questions"], data.setdefault("tracking", {})
-    included, excluded = set(), set(EXCLUDED)
+    included, excluded = load_filters(data)
     if any(not 2 <= len(q["choices"]) <= 4 or q["answer"] is not None and (type(q["answer"]) is not int or q["answer"] not in range(len(q["choices"]))) for q in bank):
         raise ValueError("Each question needs 2-4 choices and a valid answer index or null.")
     if not sys.stdin.isatty():
@@ -282,7 +293,7 @@ def main():
                 while (selected := menu("Reset", [f"{title} ({len(pool(bank, [('history', title)], (), tracking))})" for title, _, _ in HISTORY], selected=selected, notice=status)) is not None:
                     status = reset(data, HISTORY[selected][0].lower())
             elif action == 2:
-                filter_menu(bank, tracking, included, excluded)
+                filter_menu(data, included, excluded)
             else:
                 notice = build_html(data)
 
