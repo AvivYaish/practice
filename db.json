@@ -1,0 +1,474 @@
+{
+  "metadata": {
+    "title": "Practice Test Demo",
+    "version": 2,
+    "description": "A sample Q&A DB.",
+    "answer_format": "Zero-based choice index, or null for an unscored question.",
+    "statuses": {
+      "confirmed": "Answer checked for this demo.",
+      "not_checked": "Unscored demonstration."
+    },
+    "tag_definitions": {
+      "Basics": "Simple questions across topics.",
+      "Math": "Arithmetic and numbers.",
+      "Words": "Language and punctuation.",
+      "Everyday": "Time and everyday concepts.",
+      "Shapes": "Basic geometry.",
+      "Reading": "Longer question text.",
+      "AI": "Demonstrates a tag excluded by default.",
+      "Unreliable": "Unscored examples, excluded by default."
+    }
+  },
+  "questions": [
+    {
+      "id": "DEMO01",
+      "question": "What is 2 + 2?",
+      "choices": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": 1,
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Basics"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "1",
+          "note": "Placeholder source for demonstrating source fields and filters."
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "1"
+        }
+      ],
+      "note": "Adding two pairs gives four. The reference link below is a placeholder.",
+      "validation": {
+        "status": "confirmed",
+        "references": [
+          {
+            "url": "https://example.com/workbook",
+            "label": "Example reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "DEMO02",
+      "question": "What is half of 10?",
+      "choices": [
+        "5",
+        "8"
+      ],
+      "answer": 0,
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Basics"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "2"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "2"
+        }
+      ],
+      "note": "Ten divided into two equal groups gives five in each group.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO03",
+      "question": "What is 3 times 4?",
+      "choices": [
+        "7",
+        "12",
+        "14"
+      ],
+      "answer": 1,
+      "topic": "Math",
+      "tags": [
+        "Math"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "3"
+        }
+      ],
+      "note": "Three groups of four contain twelve items.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO04",
+      "question": "Which number is even?",
+      "choices": [
+        "3",
+        "8",
+        "9",
+        "11"
+      ],
+      "answer": 1,
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Basics"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "4"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "4"
+        }
+      ],
+      "note": "An even number is divisible by two without a remainder.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO05",
+      "question": "Which letter comes first in the English alphabet?",
+      "choices": [
+        "A",
+        "B",
+        "C"
+      ],
+      "answer": 0,
+      "topic": "Words",
+      "tags": [
+        "Words",
+        "Basics"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "5"
+        }
+      ],
+      "note": "The English alphabet begins A, B, C.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO06",
+      "question": "Which word means the opposite of hot?",
+      "choices": [
+        "Cold",
+        "Bright",
+        "Loud"
+      ],
+      "answer": 0,
+      "topic": "Words",
+      "tags": [
+        "Words"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "6"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "6"
+        }
+      ],
+      "note": "Hot and cold describe opposite ends of a temperature range.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO07",
+      "question": "Which punctuation mark usually ends a direct question?",
+      "choices": [
+        ".",
+        "?",
+        "!"
+      ],
+      "answer": 1,
+      "topic": "Words",
+      "tags": [
+        "Words"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "7"
+        }
+      ],
+      "note": "A question mark usually ends a direct question.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO08",
+      "question": "Which day comes immediately after Monday?",
+      "choices": [
+        "Friday",
+        "Tuesday",
+        "Wednesday",
+        "Sunday"
+      ],
+      "answer": 1,
+      "topic": "Everyday",
+      "tags": [
+        "Everyday",
+        "Basics"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "8"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "8"
+        }
+      ],
+      "note": "The sequence begins Monday, Tuesday, Wednesday.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO09",
+      "question": "How many minutes are in one hour?",
+      "choices": [
+        "30",
+        "45",
+        "60",
+        "90"
+      ],
+      "answer": 2,
+      "topic": "Everyday",
+      "tags": [
+        "Everyday"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "9"
+        }
+      ],
+      "note": "One hour contains sixty minutes.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO10",
+      "question": "How many corners does a triangle have?",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": 1,
+      "topic": "Shapes",
+      "tags": [
+        "Shapes",
+        "Basics"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "10"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "10"
+        }
+      ],
+      "note": "A triangle has three sides and three corners.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO11",
+      "question": "Which shape has no corners?",
+      "choices": [
+        "Circle",
+        "Square"
+      ],
+      "answer": 0,
+      "topic": "Shapes",
+      "tags": [
+        "Shapes"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "11"
+        }
+      ],
+      "note": "A circle has a continuous curved boundary and no corners.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO12",
+      "question": "A box contains two red tiles and three blue tiles. You add one more blue tile without removing anything. Counting tiles of both colors, how many tiles are now in the box?",
+      "choices": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answer": 1,
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "Reading"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "12"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "12"
+        }
+      ],
+      "note": "Start with two red tiles and three blue tiles: 2 + 3 = 5.\nAdd one blue tile: 5 + 1 = 6.\nThe colors do not change the total. This longer example demonstrates wrapping and multiline notes.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO13",
+      "question": "What is 9 - 4?",
+      "choices": [
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": 1,
+      "topic": "Math",
+      "tags": [
+        "Math",
+        "AI"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "13"
+        }
+      ],
+      "note": "Nine minus four is five. This example demonstrates the AI tag, which is excluded by default.",
+      "validation": {
+        "status": "confirmed"
+      }
+    },
+    {
+      "id": "DEMO14",
+      "question": "Which season is the best?",
+      "choices": [
+        "Spring",
+        "Summer",
+        "Autumn",
+        "Winter"
+      ],
+      "answer": null,
+      "topic": "Everyday",
+      "tags": [
+        "Everyday",
+        "Unreliable"
+      ],
+      "sources": [
+        {
+          "name": "Example workbook",
+          "url": "https://example.com/workbook",
+          "question_id": "14"
+        },
+        {
+          "name": "Example cards",
+          "url": "https://example.com/cards",
+          "question_id": "14"
+        }
+      ],
+      "note": "This is subjective, so there is no correct answer. Any choice is unscored. Enable Unreliable to include this question.",
+      "validation": {
+        "status": "not_checked"
+      }
+    }
+  ],
+  "tracking": {
+    "DEMO01": {
+      "viewed": "2026-01-01T12:00:00Z",
+      "wrong": [
+        {
+          "at": "2026-01-01T12:01:00Z",
+          "answer": "3"
+        },
+        {
+          "at": "2026-01-02T12:01:00Z",
+          "answer": "5"
+        }
+      ]
+    },
+    "DEMO02": {
+      "viewed": "2026-01-01T12:02:00Z"
+    },
+    "DEMO05": {
+      "viewed": "2026-01-01T12:03:00Z",
+      "skipped": [
+        "2026-01-01T12:04:00Z"
+      ]
+    },
+    "DEMO08": {
+      "viewed": "2026-01-01T12:05:00Z",
+      "wrong": [
+        {
+          "at": "2026-01-01T12:06:00Z",
+          "answer": "Wednesday"
+        }
+      ]
+    },
+    "DEMO10": {
+      "viewed": "2026-01-01T12:07:00Z",
+      "skipped": [
+        "2026-01-01T12:08:00Z",
+        "2026-01-02T12:08:00Z"
+      ]
+    }
+  }
+}

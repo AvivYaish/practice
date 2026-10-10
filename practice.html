@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f5f7fb" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme:dark)">
+<title>Practice Test Demo</title>
+<style>
+:root{color-scheme:light dark;font:16px/1.5 system-ui,sans-serif;--page:#f5f7fb;--surface:#fff;--soft:#edf1f7;--border:#d3dce9;--ink:#142238;--muted:#586780;--navy:#17345f;--focus:#6589bd;--correct:#edf4ff;--correct-border:#35649d;--check:#18703a;--wrong:#fff1f0;--wrong-border:#b94751;background:var(--page);color:var(--ink)}
+@media(prefers-color-scheme:dark){:root{--page:#0b1220;--surface:#121d2f;--soft:#1a2942;--border:#30425e;--ink:#e8eef8;--muted:#afbdd2;--navy:#244778;--focus:#93b7ef;--correct:#1a3252;--correct-border:#83aff0;--check:#81d59b;--wrong:#38202b;--wrong-border:#df8590}}
+*{box-sizing:border-box}body{margin:0}main{max-width:760px;margin:auto;padding:24px 20px 40px}header{text-align:center;font-size:24px;font-weight:650;margin-bottom:18px}header button{padding:0;border:0;background:none}
+.card,dialog{background:var(--surface);border:1px solid var(--border);border-radius:16px}.card{padding:clamp(22px,4vw,34px)}
+h1{font-size:28px;margin:0 0 12px}h2{font-size:24px;line-height:1.4;margin:16px 0;outline:none;overflow-wrap:anywhere}p{margin:10px 0}
+.control-row>span,#tag>span:first-child,#tagFilters>span{color:var(--muted)}
+button,.file{font:inherit;cursor:pointer;min-height:48px;padding:12px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:inherit;-webkit-tap-highlight-color:transparent}
+button:disabled{opacity:.55;cursor:default}button:focus-visible,.file:focus-within{outline:2px solid var(--focus);outline-offset:3px}
+.primary,#tagOptions>button[aria-pressed=true]{background:var(--navy);color:white;border-color:var(--navy)}#tagOptions .include[aria-pressed=true]{background:var(--check);color:var(--surface)}#tagOptions .exclude[aria-pressed=true]{background:var(--wrong);color:var(--wrong-border)}@media(hover:hover){button:hover,.file:hover{filter:brightness(.94)}}
+.actions,.control-row,#tagOptions,#tag{display:flex;gap:6px}.actions{gap:10px;flex-wrap:wrap}.actions>button{flex:1}
+#home-controls{display:grid;gap:14px;max-width:640px;margin:auto}#home .primary{min-height:72px;font-size:22px;font-weight:650}#questionCount{display:block;font-size:14px;font-weight:400}
+.control-row{align-items:center;font-size:14px}.control-row>span{flex:0 0 68px}
+.control-row>button,.control-row>.file,#tagOptions button{flex:1;min-width:0;padding:8px 4px;min-height:44px;align-self:stretch;overflow-wrap:anywhere}#tagOptions button{white-space:pre-line}
+#tags{align-items:flex-start}#tagFilters{flex:0 0 68px;min-width:0;padding-top:9px}#tagFilters small{display:block;font-size:11px;line-height:1.4;color:var(--muted)}
+#tagOptions{flex:1;flex-wrap:wrap;min-width:0}#tagOptions>button,.tag-option{flex:1 0 180px}.tag-option{display:flex;min-width:0;overflow:hidden;border:1px solid var(--border);border-radius:10px}.tag-option button{border:0;border-radius:0;background:transparent}.tag-actions{display:flex;flex:0 0 23px;flex-direction:column;border-right:1px solid var(--border)}#tagOptions .tag-actions button{min-height:22px;padding:0;font-size:18px;line-height:1}.tag-actions button+button{border-top:1px solid var(--border)}
+.toolbar,.dialog-bar{display:flex;align-items:center;gap:4px;position:sticky;top:0;background:var(--surface);padding:6px 0;z-index:1}.toolbar{font-size:14px}
+.toolbar>*{flex:none;min-width:36px;min-height:44px;padding:6px;white-space:nowrap}
+.quiz-actions,#navigation{display:flex;gap:4px}.toolbar>div{padding:0}#navigation{margin:0 auto}.quiz-actions button,#navigation button{min-height:44px;padding:6px;white-space:nowrap}
+.counter{display:inline-flex;align-items:center;font-variant-numeric:tabular-nums;font-weight:700;background:var(--soft);border:0;border-radius:8px}
+progress,hr{display:block;width:100%;height:4px;border:0;border-radius:4px;accent-color:var(--navy);background:var(--soft)}hr{margin:14px 0}
+progress::-webkit-progress-bar{background:var(--soft)}progress::-webkit-progress-value{background:var(--navy)}progress::-moz-progress-bar{background:var(--navy)}
+#choices{display:grid;gap:9px}#choices button{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;text-align:left;line-height:1.4;overflow-wrap:anywhere}#choices button>span:last-child{min-width:0}
+.number{flex:none;width:27px;height:27px;display:grid;place-items:center;background:var(--soft);border-radius:7px;font-size:13px;font-weight:650}
+.mark{font-weight:700;color:var(--wrong-border)}.mark.good{color:var(--check)}
+#choices .selected{background:var(--soft);border-color:var(--focus);opacity:1}#choices .correct{background:var(--correct);border-color:var(--correct-border);opacity:1}#choices .wrong{background:var(--wrong);border-color:var(--wrong-border);opacity:1}
+#feedback{margin-top:14px;padding:14px;background:var(--soft);border-radius:10px}
+#feedback hr,.result hr{height:1px;margin:10px 0;background:var(--border)}
+#tag{align-items:center;flex-wrap:wrap;font-size:13px}.badge{font-size:11px;background:var(--soft);border-radius:5px;padding:3px 6px;overflow-wrap:anywhere}
+.result{border-top:1px solid var(--border);padding:18px 0;font-size:15px}.result h3{font-size:18px;line-height:1.4;margin:0 0 10px}.result p{margin:6px 0}.result summary{cursor:pointer;padding:10px 0;min-height:44px}.result summary,.result li{font-size:14px}
+dialog{color:inherit;width:min(680px,calc(100% - 24px));max-width:calc(100% - 24px);max-height:calc(100dvh - 24px);padding:0 18px 12px;overflow:auto}dialog::backdrop{background:#0008}
+dialog.note{position:fixed;inset:auto 12px;margin:0 auto;box-shadow:0 12px 40px #0003}dialog.note::backdrop{background:#0004}
+.dialog-bar{justify-content:space-between}.dialog-bar h2{font-size:18px;margin:0}.dialog-bar button{font-size:14px;padding:8px;min-width:44px}
+.file{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.file input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+#editor form{display:grid;gap:10px;margin:12px 0}#editor:has(#tagEditor[open]) #questionForm{display:none}#editor label{display:grid;gap:4px;font-size:14px}#editor input,#editor textarea,#editor select{width:100%;min-width:0;font:inherit;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:inherit}#editor textarea{resize:vertical}#editor .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}#editor summary{cursor:pointer;padding:12px 0}#editMessage{color:var(--wrong-border);white-space:pre-line}#editId{font-size:12px;color:var(--muted)}#editor .actions>button{min-width:0;padding:8px}
+[hidden]{display:none!important}
+@media(max-width:600px){main{padding:max(12px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}.card{padding:0;border:0;background:transparent}.card .actions>button{flex-basis:100%}.control-row{font-size:13px}#tagOptions>button,.tag-option{flex-basis:160px}.toolbar{background:var(--page);font-size:12px;gap:3px;flex-wrap:wrap}#navigation{margin-right:0}.toolbar>.quiz-actions{flex:1 0 auto}.quiz-actions button{flex:1;padding:4px}.toolbar>*{min-width:32px;padding:5px}h2{font-size:20px;margin:12px 0 16px}#choices{gap:8px}#choices button{min-height:52px;padding:11px 12px;gap:10px}.number{width:24px;height:24px}main:has(#quiz:not([hidden]))>header{display:none}}
+</style>
+<main>
+  <header><button id="menu" onclick="home()">Practice Test</button></header>
+  <div class="card">
+    <section id="home">
+      <div id="home-controls">
+        <button class="primary" onclick="start()">Start (Enter)<small id="questionCount"></small></button>
+        <div id="database" class="control-row"><span>Database:</span><label class="file">Load<input id="import" type="file" accept=".json,application/json" aria-label="Load database"></label><button onclick="download()">Download</button><button onclick="openEditor()">Edit</button></div>
+        <div id="reset" class="control-row"><span>Reset:</span></div>
+        <div id="tags" class="control-row"><div id="tagFilters"><span>Filters:</span><small>- exclude<br>+ include</small></div><div id="tagOptions" role="group" aria-label="Question filters"></div></div>
+      </div>
+    </section>
+    <section id="quiz" hidden>
+      <div class="toolbar"><span id="clock" class="counter" role="timer"></span><span id="position" class="counter"></span><button class="counter" id="wrongButton" onclick="popup('wrong')">Wrong: 0 (7)</button><div id="navigation"><button id="back" onclick="index ? show(-1) : home()">Back (←)</button><button id="next" class="primary" onclick="advance()">Next (→)</button></div><div class="quiz-actions"><button id="note" onclick="popup('note')">Note (8)</button><button id="reveal" onclick="reveal()">Reveal (9)</button><button id="end" onclick="finish('Ended early.')">End (0)</button></div></div>
+      <progress id="progress" value="0" aria-label="Questions answered"></progress>
+      <h2 id="prompt" tabindex="-1"></h2>
+      <div id="choices"></div>
+      <hr><div id="tag"></div>
+      <div id="feedback" aria-live="polite" hidden></div>
+    </section>
+    <section id="results" hidden>
+      <h1 id="resultTitle"></h1><p id="score"></p>
+      <div class="actions"><button class="primary" onclick="start()">Start (Enter)</button><button onclick="home()">Home</button></div>
+      <h2 id="missesTitle"></h2><div id="misses"></div>
+      <h2 id="unviewedTitle"></h2><div id="unviewed"></div>
+    </section>
+  </div>
+</main>
+<dialog id="popup" aria-labelledby="popupTitle">
+  <div class="dialog-bar"><h2 id="popupTitle"></h2><button onclick="dialog.close()">Close</button></div>
+  <div id="popupBody"></div>
+</dialog>
+<dialog id="editor" aria-labelledby="editorTitle">
+  <div class="dialog-bar"><h2 id="editorTitle">Edit database</h2><button onclick="$('editor').close()">Close</button></div>
+  <p id="editMessage" role="status"></p>
+  <details id="tagEditor"><summary>Tags</summary><form id="tagForm">
+    <select id="editTag" aria-label="Tag"></select>
+    <label>Name<input id="editTagName" required></label>
+    <label>Description<textarea id="editTagDescription" rows="2"></textarea></label>
+    <div class="actions"><button class="primary">Save tag</button><button type="button" id="deleteTag" onclick="window.deleteTag()">Delete tag</button></div>
+  </form></details>
+  <hr>
+  <form id="questionForm">
+    <label>Find a question<input id="editSearch" type="search" placeholder="Question, ID, or tag"></label>
+    <select id="editSelect" aria-label="Question"></select>
+    <div class="actions"><button type="button" onclick="window.editQuestion()">New question</button><button type="button" id="deleteQuestion" onclick="window.deleteQuestion()">Delete question</button></div>
+    <span id="editId"></span>
+    <label>Question<textarea id="editQuestion" rows="3" required></textarea></label>
+    <label>Choices (2-4, one per line)<textarea id="editChoices" rows="4" required></textarea></label>
+    <div class="pair"><label>Answer<select id="editAnswer"><option value="">Unscored</option><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option></select></label><label>Topic<input id="editTopic"></label></div>
+    <label>Tags (comma separated)<input id="editTags"></label>
+    <label>Note<textarea id="editNote" rows="3"></textarea></label>
+    <button class="primary">Save question</button>
+  </form>
+</dialog>
+<script id="data" type="application/json">{"metadata":{"title":"Practice Test Demo","version":2,"description":"Public demo. Questions and sample history were created for this example. Source links are placeholders, not published question sources. No personal practice history is included.","answer_format":"Zero-based choice index, or null for an unscored question.","statuses":{"confirmed":"Answer checked for this demo.","not_checked":"Unscored demonstration."},"tag_definitions":{"Basics":"Simple questions across topics.","Math":"Arithmetic and numbers.","Words":"Language and punctuation.","Everyday":"Time and everyday concepts.","Shapes":"Basic geometry.","Reading":"Longer question text.","AI":"Demonstrates a tag excluded by default.","Unreliable":"Unscored examples, excluded by default."}},"questions":[{"id":"DEMO01","question":"What is 2 + 2?","choices":["3","4","5","6"],"answer":1,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"1","note":"Placeholder source for demonstrating source fields and filters."},{"name":"Example cards","url":"https://example.com/cards","question_id":"1"}],"note":"Adding two pairs gives four. The reference link below is a placeholder.","validation":{"status":"confirmed","references":[{"url":"https://example.com/workbook","label":"Example reference"}]}},{"id":"DEMO02","question":"What is half of 10?","choices":["5","8"],"answer":0,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"2"},{"name":"Example cards","url":"https://example.com/cards","question_id":"2"}],"note":"Ten divided into two equal groups gives five in each group.","validation":{"status":"confirmed"}},{"id":"DEMO03","question":"What is 3 times 4?","choices":["7","12","14"],"answer":1,"topic":"Math","tags":["Math"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"3"}],"note":"Three groups of four contain twelve items.","validation":{"status":"confirmed"}},{"id":"DEMO04","question":"Which number is even?","choices":["3","8","9","11"],"answer":1,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"4"},{"name":"Example cards","url":"https://example.com/cards","question_id":"4"}],"note":"An even number is divisible by two without a remainder.","validation":{"status":"confirmed"}},{"id":"DEMO05","question":"Which letter comes first in the English alphabet?","choices":["A","B","C"],"answer":0,"topic":"Words","tags":["Words","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"5"}],"note":"The English alphabet begins A, B, C.","validation":{"status":"confirmed"}},{"id":"DEMO06","question":"Which word means the opposite of hot?","choices":["Cold","Bright","Loud"],"answer":0,"topic":"Words","tags":["Words"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"6"},{"name":"Example cards","url":"https://example.com/cards","question_id":"6"}],"note":"Hot and cold describe opposite ends of a temperature range.","validation":{"status":"confirmed"}},{"id":"DEMO07","question":"Which punctuation mark usually ends a direct question?","choices":[".","?","!"],"answer":1,"topic":"Words","tags":["Words"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"7"}],"note":"A question mark usually ends a direct question.","validation":{"status":"confirmed"}},{"id":"DEMO08","question":"Which day comes immediately after Monday?","choices":["Friday","Tuesday","Wednesday","Sunday"],"answer":1,"topic":"Everyday","tags":["Everyday","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"8"},{"name":"Example cards","url":"https://example.com/cards","question_id":"8"}],"note":"The sequence begins Monday, Tuesday, Wednesday.","validation":{"status":"confirmed"}},{"id":"DEMO09","question":"How many minutes are in one hour?","choices":["30","45","60","90"],"answer":2,"topic":"Everyday","tags":["Everyday"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"9"}],"note":"One hour contains sixty minutes.","validation":{"status":"confirmed"}},{"id":"DEMO10","question":"How many corners does a triangle have?","choices":["2","3","4"],"answer":1,"topic":"Shapes","tags":["Shapes","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"10"},{"name":"Example cards","url":"https://example.com/cards","question_id":"10"}],"note":"A triangle has three sides and three corners.","validation":{"status":"confirmed"}},{"id":"DEMO11","question":"Which shape has no corners?","choices":["Circle","Square"],"answer":0,"topic":"Shapes","tags":["Shapes"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"11"}],"note":"A circle has a continuous curved boundary and no corners.","validation":{"status":"confirmed"}},{"id":"DEMO12","question":"A box contains two red tiles and three blue tiles. You add one more blue tile without removing anything. Counting tiles of both colors, how many tiles are now in the box?","choices":["5","6","7","8"],"answer":1,"topic":"Math","tags":["Math","Reading"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"12"},{"name":"Example cards","url":"https://example.com/cards","question_id":"12"}],"note":"Start with two red tiles and three blue tiles: 2 + 3 = 5.\nAdd one blue tile: 5 + 1 = 6.\nThe colors do not change the total. This longer example demonstrates wrapping and multiline notes.","validation":{"status":"confirmed"}},{"id":"DEMO13","question":"What is 9 - 4?","choices":["4","5","6"],"answer":1,"topic":"Math","tags":["Math","AI"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"13"}],"note":"Nine minus four is five. This example demonstrates the AI tag, which is excluded by default.","validation":{"status":"confirmed"}},{"id":"DEMO14","question":"Which season is the best?","choices":["Spring","Summer","Autumn","Winter"],"answer":null,"topic":"Everyday","tags":["Everyday","Unreliable"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"14"},{"name":"Example cards","url":"https://example.com/cards","question_id":"14"}],"note":"This is subjective, so there is no correct answer. Any choice is unscored. Enable Unreliable to include this question.","validation":{"status":"not_checked"}}],"tracking":{"DEMO01":{"viewed":"2026-01-01T12:00:00Z","wrong":[{"at":"2026-01-01T12:01:00Z","answer":"3"},{"at":"2026-01-02T12:01:00Z","answer":"5"}]},"DEMO02":{"viewed":"2026-01-01T12:02:00Z"},"DEMO05":{"viewed":"2026-01-01T12:03:00Z","skipped":["2026-01-01T12:04:00Z"]},"DEMO08":{"viewed":"2026-01-01T12:05:00Z","wrong":[{"at":"2026-01-01T12:06:00Z","answer":"Wednesday"}]},"DEMO10":{"viewed":"2026-01-01T12:07:00Z","skipped":["2026-01-01T12:08:00Z","2026-01-02T12:08:00Z"]}}}</script>
+<script>
+const $ = id => document.getElementById(id), data = JSON.parse($('data').textContent), dialog = $('popup')
+const bank = data.questions, initialTracking = data.tracking, tracking = data.tracking = Object.create(null)
+const unique = values => [...new Set(values)], tagKeys = (kind,values) => values.map(value => JSON.stringify([kind,value]))
+const readTags = text => unique(text.split(',').map(s => s.trim()).filter(Boolean))
+const storageKey = 'practice-test-demo-v2', includedTags = new Set(), excludedTags = new Set(tagKeys('tag',['Unreliable','AI'])), labels = ['Wrong','Skipped','Unviewed']
+let questions = [], answers = [], revealed = new Set(), index, started, selected, state = 'home'
+for (const label of labels) element('button',label,$('reset'),{id:'reset'+label,onclick:() => reset(label.toLowerCase())})
+function element(tag,text='',parent,attributes={}) {
+  const node = Object.assign(document.createElement(tag),{textContent:text},attributes)
+  parent?.append(node)
+  return node
+}
+function marker(node,correct) {
+  node.prepend(element('span',correct ? '✓ ' : '✗ ',null,{className:`mark${correct ? ' good' : ''}`,ariaLabel:correct ? 'Correct' : 'Wrong'}))
+}
+function answerText(container,q,choice,showKey=true) {
+  const line = (label,index,empty) => {
+    const node = element('p',`${label}: ${index === null ? empty : q.choices[index]}`,container)
+    if (showKey && q.answer !== null && index !== null) marker(node,index === q.answer)
+  }
+  if (choice !== undefined) line('Choice',choice,'Skipped')
+  if (showKey) {
+    if (choice !== undefined) element('hr','',container)
+    line('Answer',q.answer,'Not verified.')
+  }
+}
+function questionTags(q) { return q.tags || [] }
+function questionSources(q) { return (q.sources || []).map(s => s.name).filter(name => typeof name === 'string' && name.trim()) }
+function tagNames() { return unique([...Object.keys(data.metadata?.tag_definitions || {}),...bank.flatMap(questionTags)]).sort() }
+function uniqueChoices(choices) { return unique(choices.map(s => s.trim().replace(/\s+/g,' ').toLowerCase())).length === choices.length }
+function history(q,label) { return label.toLowerCase() === 'unviewed' ? !tracking[q.id]?.viewed : !!tracking[q.id]?.[label.toLowerCase()]?.length }
+function filterTags(q) { return [...tagKeys('tag',questionTags(q)),...tagKeys('source',questionSources(q)),...tagKeys('history',labels.filter(label => history(q,label)))] }
+function included(q) {
+  const tags = filterTags(q), selected = [...includedTags]
+  return !tags.some(tag => excludedTags.has(tag)) && [true,false].every(history => {
+    const keys = selected.filter(tag => (JSON.parse(tag)[0] === 'history') === history)
+    return !keys.length || keys.some(tag => tags.includes(tag))
+  })
+}
+function session() {
+  return answers.flatMap((choice,i) => questions[i].answer !== null && choice != null && choice !== questions[i].answer ? [{q:questions[i],choice}] : [])
+}
+function save() {
+  try { localStorage.setItem(storageKey,JSON.stringify(data)) }
+  catch { alert('Could not save progress. Download the file before closing.') }
+  updateTags()
+}
+function reset(category) {
+  const field = category === 'unviewed' ? 'viewed' : category
+  for (const [id,row] of Object.entries(tracking)) {
+    delete row[field]
+    if (!Object.keys(row).length) delete tracking[id]
+  }
+  save()
+}
+function updateTags() {
+  const count = bank.filter(included).length
+  $('questionCount').textContent = `Questions: ${count}`
+  $('questionCount').parentElement.disabled = !count
+  const tags = [...tagKeys('history',labels),...tagKeys('tag',tagNames()),...tagKeys('source',unique(bank.flatMap(questionSources)).sort())]
+  const counts = new Map()
+  for (const q of bank) for (const tag of new Set(filterTags(q))) counts.set(tag,(counts.get(tag) || 0)+1)
+  $('tagOptions').replaceChildren()
+  const all = bank.filter(q => !filterTags(q).some(tag => excludedTags.has(tag))).length
+  element('button',`All\n(${all})`,$('tagOptions'),{onclick:() => { includedTags.clear(); updateTags() }}).setAttribute('aria-pressed',!includedTags.size)
+  for (const tag of tags) {
+    const [kind,label] = JSON.parse(tag), count = counts.get(tag) || 0
+    if (kind === 'history') $('reset'+label).disabled = label === 'Unviewed' ? count === bank.length : !count
+    const box = element('div','',$('tagOptions'),{className:'tag-option'})
+    box.setAttribute('role','group'); box.setAttribute('aria-label',`${label} ${kind}`)
+    const actions = element('div','',box,{className:'tag-actions'})
+    for (const [text,set,other] of [['-',excludedTags,includedTags],['+',includedTags,excludedTags],[`${label}\n(${count})`,null,null]]) {
+      const action = set === excludedTags ? 'Exclude' : set ? 'Include' : 'Clear'
+      const button = element('button',text,set ? actions : box,{className:set ? action.toLowerCase() : '',ariaLabel:`${action} ${label} ${kind}`,onclick:() => {
+        if (set) { other.delete(tag); if (!set.delete(tag)) set.add(tag) }
+        else { includedTags.delete(tag); excludedTags.delete(tag) }
+        updateTags()
+      }})
+      if (set) button.setAttribute('aria-pressed',set.has(tag))
+    }
+  }
+}
+let editId = ''
+function touched(ids=[]) {
+  const metadata = data.metadata ||= {}
+  metadata.edits = unique([...(metadata.edits || []),...ids])
+  metadata.edited_on = new Date().toISOString()
+}
+function editMessage(text='') { $('editMessage').textContent = text }
+function questionList(id=editId) {
+  const term = $('editSearch').value.trim().toLowerCase(), select = $('editSelect')
+  select.replaceChildren()
+  for (const q of bank) if (`${q.id} ${q.question} ${questionTags(q).join(' ')}`.toLowerCase().includes(term)) element('option',`${q.id}: ${q.question}`,select,{value:q.id})
+  if ([...select.options].some(option => option.value === id)) select.value = id
+  return select.value
+}
+function editQuestion(id='') {
+  const q = bank.find(q => q.id === id)
+  editId = q?.id || ''; $('editSelect').value = editId
+  for (const [field,value] of Object.entries({Question:q?.question,Choices:q?.choices.join('\n'),Answer:q?.answer,Topic:q?.topic,Tags:q?.tags?.join(', '),Note:q?.note})) $('edit'+field).value = value ?? ''
+  $('editId').textContent = editId || 'New question'; $('deleteQuestion').disabled = !q; editMessage()
+}
+function editTag() {
+  const tag = $('editTag').value, definitions = data.metadata?.tag_definitions || {}
+  $('editTagName').value = tag; $('editTagDescription').value = Object.hasOwn(definitions,tag) ? definitions[tag] : ''
+  $('deleteTag').disabled = !tag
+}
+function tagList(tag=$('editTag').value) {
+  $('editTag').replaceChildren(); element('option','New tag',$('editTag'),{value:''})
+  for (const name of tagNames()) element('option',name,$('editTag'),{value:name})
+  $('editTag').value = tagNames().includes(tag) ? tag : ''; editTag()
+}
+function openEditor() {
+  $('tagEditor').open = false; $('editSearch').value = ''; editQuestion(questionList()); tagList(); $('editor').showModal()
+}
+$('editSearch').oninput = () => editQuestion(questionList())
+$('editSearch').onkeydown = e => { if (e.key === 'Enter') e.preventDefault() }
+$('editSelect').onchange = e => editQuestion(e.target.value)
+$('editTag').onchange = editTag
+$('questionForm').onsubmit = e => {
+  e.preventDefault()
+  const old = bank.find(q => q.id === editId), question = $('editQuestion').value.trim(), choices = $('editChoices').value.split('\n').map(s => s.trim()).filter(Boolean), answer = $('editAnswer').value === '' ? null : Number($('editAnswer').value)
+  if (!question || choices.length < 2 || choices.length > 4 || !uniqueChoices(choices) || answer !== null && answer >= choices.length) { editMessage('Enter a question, 2-4 different choices, and a valid answer.'); return }
+  let id = editId || 'LOCAL'+Date.now().toString(36).toUpperCase()
+  while (!editId && bank.some(q => q.id === id)) id += 'x'
+  const q = {...(old || {id,sources:[]}),question,choices,answer,tags:readTags($('editTags').value),topic:$('editTopic').value.trim(),note:$('editNote').value.trim()}
+  if (!old || question !== old.question || JSON.stringify(choices) !== JSON.stringify(old.choices) || answer !== old.answer) {
+    q.validation = {...q.validation,status:'not_checked'}
+    const warning = 'Edited locally. Recheck the answer.'
+    if (old && !q.note.includes(warning)) q.note = [q.note,warning].filter(Boolean).join('\n')
+  }
+  if (old) bank[bank.indexOf(old)] = q
+  else bank.push(q)
+  touched([id]); save(); $('editSearch').value = ''; questionList(id); editQuestion(id); tagList(); editMessage('Saved.')
+}
+function deleteQuestion() {
+  if (!editId || !confirm('Delete this question and its history?')) return
+  const id = editId; bank.splice(bank.findIndex(q => q.id === id),1); delete tracking[id]
+  touched([id]); save(); editQuestion(questionList()); tagList(); editMessage('Deleted.')
+}
+function changeTag(old,name,description) {
+  const definitions = {...data.metadata?.tag_definitions}, ids = []
+  delete definitions[old]
+  if (name) Object.defineProperty(definitions,name,{value:description,enumerable:true,configurable:true,writable:true})
+  for (const q of bank) if (old && questionTags(q).includes(old)) { q.tags = unique(q.tags.map(tag => tag === old ? name : tag).filter(Boolean)); ids.push(q.id) }
+  touched(ids); data.metadata.tag_definitions = definitions
+  for (const set of [includedTags,excludedTags]) if (set.delete(JSON.stringify(['tag',old])) && name) set.add(JSON.stringify(['tag',name]))
+  $('editTags').value = unique(readTags($('editTags').value).map(tag => tag === old ? name : tag).filter(Boolean)).join(', ')
+  save(); questionList(); tagList(name); editMessage(name ? 'Saved.' : 'Deleted.')
+}
+$('tagForm').onsubmit = e => {
+  e.preventDefault()
+  const old = $('editTag').value, name = $('editTagName').value.trim(), definitions = data.metadata?.tag_definitions || {}
+  let description = $('editTagDescription').value.trim()
+  if (!name || !old && tagNames().includes(name)) { editMessage('Enter a new tag name.'); return }
+  if (name !== old && tagNames().includes(name)) {
+    if (!confirm(`Merge tag "${old}" into "${name}"?`)) return
+    if (description === (Object.hasOwn(definitions,old) ? definitions[old] : '')) description = Object.hasOwn(definitions,name) ? definitions[name] : ''
+  }
+  changeTag(old,name,description)
+}
+function deleteTag() {
+  const tag = $('editTag').value
+  if (tag && confirm(`Delete tag "${tag}" from all questions?`)) changeTag(tag,'','')
+}
+function sameQuestion(q) {
+  const key = JSON.stringify(q.choices)
+  return bank.find(b => (b.question === q.question && JSON.stringify(b.choices) === key
+    || Array.isArray(q.sources) && q.sources.some(s => s?.question_id != null && b.sources?.some(t => t.url === s.url && String(t.question_id) === String(s.question_id))))
+    && (b.answer === q.answer || b.validation?.status !== 'not_checked' || data.metadata?.edits?.includes(b.id)))
+}
+function merge(input) {
+  const aliases = new Map(), currentEdits = new Set(data.metadata?.edits || []), edits = new Set(input.metadata?.edits || [])
+  for (const id of edits) {
+    const q = input.questions?.find(q => q.id === id), at = bank.findIndex(q => q.id === id)
+    if (q) { if (at < 0) bank.push({...q}); else bank[at] = {...q} }
+    else { if (at >= 0) bank.splice(at,1); delete tracking[id] }
+  }
+  for (const q of input.questions || []) {
+    if (edits.has(q.id)) { aliases.set(q.id,q.id); continue }
+    if (currentEdits.has(q.id)) continue
+    let found = sameQuestion(q)
+    if (!found) {
+      found = {...q}; let n = 2
+      while (bank.some(b => b.id === found.id)) found.id = `${q.id}~${n++}`
+      bank.push(found)
+    }
+    aliases.set(q.id,found.id)
+  }
+  if (Array.isArray(input.metadata?.edits)) {
+    data.metadata ||= {}
+    data.metadata.edits = unique([...currentEdits,...edits])
+    if (input.metadata.tag_definitions) data.metadata.tag_definitions = {...input.metadata.tag_definitions}
+    if (input.metadata.edited_on) data.metadata.edited_on = input.metadata.edited_on
+  }
+  for (const [old,p] of Object.entries(input.tracking || {})) {
+    const id = aliases.get(old) || old
+    if ((edits.has(id) || currentEdits.has(id)) && !bank.some(q => q.id === id)) continue
+    const row = tracking[id] ||= {}
+    const events = [...(row.wrong || []),...(p.wrong || [])]
+    if (events.length) row.wrong = [...new Map(events.map(e => [JSON.stringify(e),e])).values()].sort((a,b) => a.at.localeCompare(b.at))
+    const skips = unique([...(row.skipped || []),...(p.skipped || [])]).sort()
+    if (skips.length) row.skipped = skips
+    const viewed = [row.viewed,p.viewed].filter(Boolean).sort()[0]
+    if (viewed) row.viewed = viewed
+    if (!Object.keys(row).length) delete tracking[id]
+  }
+}
+function valid(input) {
+  const array = (v,test) => v == null || Array.isArray(v) && v.every(test), string = v => typeof v === 'string', object = v => v && typeof v === 'object' && !Array.isArray(v), metadata = input?.metadata
+  return input && typeof input === 'object' && !Array.isArray(input)
+    && (metadata == null || object(metadata) && (metadata.edits === undefined || Array.isArray(input.questions) && Array.isArray(metadata.edits) && metadata.edits.every(id => string(id) && id.trim()) && new Set(metadata.edits).size === metadata.edits.length)
+      && (metadata.tag_definitions === undefined || object(metadata.tag_definitions) && Object.values(metadata.tag_definitions).every(string))
+      && (metadata.edited_on === undefined || string(metadata.edited_on) && Number.isFinite(Date.parse(metadata.edited_on))))
+    && (!input.tracking || object(input.tracking))
+    && (!input.questions || Array.isArray(input.questions) && new Set(input.questions.map(q => q?.id)).size === input.questions.length)
+    && array(input.questions,q => q && string(q.id) && q.id.trim() && string(q.question) && q.question.trim() && Array.isArray(q.choices) && q.choices.length >= 2 && q.choices.length <= 4 && q.choices.every(choice => string(choice) && choice.trim()) && uniqueChoices(q.choices)
+      && (q.answer === null || Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.choices.length) && array(q.tags,string)
+      && (object(q.validation) && Array.isArray(q.sources) && q.sources.every(s => s && string(s.url)) || !metadata?.edits?.includes(q.id) && sameQuestion(q)))
+    && Object.values(input.tracking || {}).every(p => object(p) && (p.viewed == null || string(p.viewed))
+      && array(p.wrong,e => e && string(e.at) && string(e.answer)) && array(p.skipped,string))
+}
+function screen(name) {
+  state = name
+  for (const id of ['home','quiz','results']) $(id).hidden = id !== name
+}
+function start() {
+  questions = bank.filter(included)
+  for (let i = questions.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [questions[i],questions[j]] = [questions[j],questions[i]] }
+  if (!questions.length) return
+  index = selected = 0; answers = []; revealed.clear(); started = Date.now()
+  screen('quiz'); show()
+}
+function show(step=0) {
+  index += step
+  const q = questions[index], choice = answers[index], showKey = revealed.has(q.id)
+  selected = choice ?? (step ? 0 : selected)
+  if (choice === undefined) (tracking[q.id] ||= {}).viewed ||= new Date().toISOString()
+  $('position').textContent = `${index+1} / ${questions.length}`
+  $('wrongButton').textContent = `Wrong: ${session().length} (7)`
+  $('progress').max = questions.length; $('progress').value = answers.length
+  $('prompt').textContent = q.question; $('choices').replaceChildren()
+  $('reveal').disabled = showKey
+  q.choices.forEach((answer,i) => {
+    const button = element('button','',$('choices')), correct = i === q.answer
+    element('span',i+1,button).className = 'number'
+    const text = element('span',answer,button)
+    if (showKey && q.answer !== null && (correct || i === choice)) marker(text,correct)
+    button.disabled = choice != null
+    button.className = showKey && correct ? 'correct' : showKey && q.answer !== null && i === choice ? 'wrong' : i === choice ? 'selected' : ''
+    button.onfocus = () => highlight(i); button.onclick = () => submit(i)
+  })
+  highlight()
+  $('feedback').replaceChildren(); answerText($('feedback'),q,choice,showKey)
+  $('feedback').hidden = choice === undefined && !showKey
+  $('tag').replaceChildren(); if (q.tags?.length) element('span','Tags:',$('tag'))
+  for (const tag of questionTags(q)) element('span',tag,$('tag')).className = 'badge'
+  $('prompt').focus({preventScroll:true}); window.scrollTo(0,0); tick()
+}
+function reveal() {
+  revealed.add(questions[index].id); show()
+}
+function highlight(choice=selected) {
+  selected = (choice+questions[index].choices.length)%questions[index].choices.length
+  Array.from($('choices').children).forEach((button,i) => button.classList.toggle('selected',i === (answers[index] ?? selected)))
+}
+function move(step) {
+  highlight(selected+step); $('choices').children[selected].focus({preventScroll:true})
+}
+function submit(choice) {
+  if (state !== 'quiz' || answers[index] != null || !questions[index].choices[choice]) return
+  const q = questions[index]
+  answers[index] = selected = choice
+  if (q.answer !== null && choice !== q.answer) (tracking[q.id].wrong ||= []).push({at:new Date().toISOString(),answer:q.choices[choice]})
+  advance()
+}
+function advance() {
+  if (state !== 'quiz') return
+  if (answers[index] == null) submit(selected)
+  else if (index+1 === questions.length) finish()
+  else show(1)
+}
+function tick() {
+  if (state !== 'quiz') return
+  const seconds = Math.max(0,Math.floor((Date.now()-started)/1000))
+  $('clock').textContent = `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`
+}
+function positionNote() {
+  if (!dialog.open || !dialog.classList.contains('note')) return
+  const rect = $('note').getBoundingClientRect()
+  dialog.style.top = `${rect.bottom+4}px`
+  dialog.style.maxHeight = `${Math.max(44,innerHeight-rect.bottom-16)}px`
+}
+function popup(kind) {
+  if (state !== 'quiz') return
+  dialog.close()
+  const body = $('popupBody'); dialog.removeAttribute('style'); dialog.classList.toggle('note',kind === 'note')
+  const wrong = session()
+  $('popupTitle').textContent = kind === 'note' ? 'Note' : `Wrong: ${wrong.length}`
+  if (kind === 'wrong') {
+    render(body,wrong)
+    if (!wrong.length) element('p','No wrong answers in this session.',body)
+  } else {
+    body.replaceChildren()
+    const q = questions[index], v = q.validation || {}, manual = data.metadata?.manual
+    element('p',q.note || 'No note.',body).style.whiteSpace = 'pre-line'
+    if (v.pages?.length) element('p',`Manual pages: ${v.pages.join(', ')}`,body)
+    for (const ref of [...(manual && v.pages?.length ? [{url:`${manual.url}#page=${v.pages[0]+(manual.page_offset || 0)}`,label:'Manual'}] : []),...(v.references || [])]) {
+      if (!/^https?:\/\//.test(ref.url)) continue
+      const link = element('a',ref.label || ref.url,element('p','',body)); link.href = ref.url; link.target = '_blank'; link.rel = 'noopener'
+    }
+  }
+  dialog.showModal(); positionNote()
+}
+function render(container,rows) {
+  container.replaceChildren()
+  for (const {q,choice} of rows) {
+    const card = element('article','',container,{className:'result'})
+    element('h3',q.question,card); answerText(card,q,choice)
+    const history = tracking[q.id]?.wrong || []
+    if (history.length) {
+      const details = element('details','',card)
+      element('summary',`Wrong history (${history.length})`,details)
+      const list = element('ul','',details)
+      for (const e of history) element('li',`${new Date(e.at).toLocaleString()}: ${e.answer}`,list)
+    }
+  }
+}
+function finish(reason='') {
+  if (state !== 'quiz') return
+  dialog.close(); screen('results')
+  const graded = questions.filter(q => q.answer !== null).length, correct = answers.filter((choice,i) => questions[i].answer !== null && choice === questions[i].answer).length, unseen = bank.filter(q => history(q,'Unviewed')).length
+  $('resultTitle').textContent = !graded ? 'Completed' : correct >= Math.ceil(graded*0.8) ? 'Passed' : 'Keep practicing'
+  $('score').textContent = `${correct} of ${graded} correct. ${reason}`.trim()
+  const wrong = session()
+  $('missesTitle').textContent = `Wrong (${wrong.length})`; render($('misses'),wrong)
+  $('unviewedTitle').textContent = `Unviewed (${unseen})`; $('unviewed').textContent = unseen ? 'Not yet viewed.' : ''
+  save(); window.scrollTo(0,0)
+}
+function home() { dialog.close(); if (state === 'quiz') save(); screen('home'); window.scrollTo(0,0) }
+function download() {
+  save()
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'})), link = element('a')
+  link.href = url; link.download = 'db_dummy.json'; link.click(); setTimeout(() => URL.revokeObjectURL(url),1000)
+}
+document.addEventListener('keydown',e => {
+  if ($('editor').open || e.repeat || e.ctrlKey || e.metaKey || e.altKey || e.target.closest('input,textarea,select') || e.target.isContentEditable) return
+  const key = /^Numpad[0-9]$/.test(e.code) ? e.code.slice(-1) : ({w:'ArrowUp',a:'ArrowLeft',s:'ArrowDown',d:'ArrowRight'}[e.key.toLowerCase()] || e.key)
+  if (key === 'Enter' && e.target.closest('button')) return
+  if (['home','results'].includes(state) && key === 'Enter') { e.preventDefault(); start(); return }
+  const step = {ArrowDown:1,ArrowUp:-1}[key], button = $({0:'end',Escape:'end',7:'wrongButton',8:'note',9:'reveal',ArrowLeft:'back',ArrowRight:'next'}[key])
+  if (state !== 'quiz' || !button && !step && !/^[1-4]$/.test(key) && key !== 'Enter') return
+  e.preventDefault()
+  if (key !== '7' && key !== '8') dialog.close()
+  if (button) { button.click(); return }
+  if (answers[index] != null) { if (key === 'Enter') advance(); return }
+  if (step) move(step)
+  else submit(key === 'Enter' ? selected : Number(key)-1)
+})
+document.addEventListener('wheel',e => {
+  if (e.ctrlKey || dialog.open || $('editor').open || state !== 'quiz' || answers[index] != null || !e.deltaY) return
+  e.preventDefault(); move(Math.sign(e.deltaY))
+},{passive:false})
+dialog.onclick = e => {
+  const r = dialog.getBoundingClientRect()
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close()
+}
+dialog.oncancel = e => { e.preventDefault(); finish('Ended early.') }
+$('import').onchange = async e => {
+  try {
+    const input = JSON.parse(await e.target.files[0].text())
+    if (!valid(input)) throw Error()
+    merge(input); if (Array.isArray(input.metadata?.edits)) touched(); save()
+  } catch { alert('Could not load this file. New questions require a v2 db_dummy.json.') }
+  e.target.value = ''
+}
+let saved
+try { saved = JSON.parse(localStorage.getItem(storageKey)) } catch {}
+merge({tracking:initialTracking})
+if (saved && valid(saved)) merge((Date.parse(data.metadata?.edited_on) || 0) > (Date.parse(saved.metadata?.edited_on) || 0) ? {tracking:saved.tracking} : saved)
+updateTags()
+setInterval(tick,250); document.addEventListener('visibilitychange',tick)
+window.addEventListener('resize',positionNote); window.addEventListener('scroll',positionNote,{passive:true})
+</script>
+
+</html>
