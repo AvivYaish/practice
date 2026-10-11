@@ -4,7 +4,7 @@
 from copy import deepcopy
 import json
 from uuid import uuid4
-from practice import BANK, build_html, menu, now, save
+from practice import BANK, menu, now, save
 
 try:
     from prompt_toolkit import prompt
@@ -85,8 +85,6 @@ def tag_change(data, old, new=None, description=None):
 def commit(data):
     save(data)
     print("Saved db.json.")
-    if BANK.with_name("practice.html").exists():
-        build_html(data)
 
 def question_form(data, original=None):
     q = deepcopy(original) if original else dict(id="LOCAL-" + uuid4().hex, question="", choices=[""] * 4, answer=None, tags=[])

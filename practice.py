@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Installation: Python 3.9+ and `python -m pip install "prompt_toolkit>=3.0.52,<4"`
 # Usage: `python practice.py`
+# db.json: "save_html": true also updates practice.html. False or absent saves only db.json.
 
 from collections import Counter, defaultdict
 from contextlib import suppress
@@ -16,18 +17,31 @@ HISTORY = (("Wrong", "wrong", True), ("Skipped", "skipped", True), ("Unviewed", 
 class EndTest(Exception):
     pass
 
+def write(path, text):
+    temporary = path.with_suffix(".tmp")
+    temporary.write_text(text, encoding="utf-8")
+    temporary.replace(path)
+
 def save(data, path=None):
     path = path or BANK
-    temporary = path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
+    write(path, json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+    if data.get("save_html") is True:
+        page = path.with_name("practice.html")
+        try:
+            payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+            html, count = re.subn(r'(<script id="data" type="application/json">).*?(</script>)', lambda m: m[1] + payload + m[2], page.read_text(encoding="utf-8"), count=1, flags=re.S)
+            if not count:
+                raise ValueError("Missing data block.")
+            write(page, html)
+        except (OSError, ValueError) as error:
+            raise OSError(f"{path.name} saved, but {page.name} was not updated: {error}") from error
 
 def now():
     return datetime.now(timezone.utc).isoformat()
 
 def reset(data, category):
     field = "viewed" if category == "unviewed" else category
-    for row in data.setdefault("tracking", {}).values():
+    for row in data["tracking"].values():
         row.pop(field, None)
     save(data)
     return f"Reset {category.capitalize()}."
@@ -36,16 +50,7 @@ def note(q):
     pages = q.get("validation", {}).get("pages", [])
     return "Note\n" + (q.get("note") or "No note.") + ("\nManual pages: " + ", ".join(map(str, pages)) if pages else "")
 
-def build_html(data):
-    page = BANK.with_name("practice.html")
-    payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
-    html, count = re.subn(r'(<script id="data" type="application/json">).*?(</script>)', lambda m: m[1] + payload + m[2], page.read_text(encoding="utf-8"), count=1, flags=re.S)
-    if not count:
-        raise ValueError("practice.html is missing its data block.")
-    page.write_text(html, encoding="utf-8")
-    return f"Updated {page.name}."
-
-def choose(started, q, position, misses, navigate=True, choice=-1, back=True):
+def choose(started, q, position="", misses=(), navigate=True, choice=-1, back=True):
     try:
         from prompt_toolkit import Application
         from prompt_toolkit.application.current import get_app
@@ -74,7 +79,8 @@ def choose(started, q, position, misses, navigate=True, choice=-1, back=True):
     def overflow(info):
         return max(0, sum(info.get_height_for_line(i) for i in range(info.content_height)) - info.window_height) if info else 0
     def scroll(window, key, current):
-        return move(key, current, overflow(window.render_info), max(1, window.render_info.window_height - 1) if window.render_info else 1)
+        info = window.render_info
+        return move(key, current, overflow(info), max(1, info.window_height - 1) if info else 1)
 
     def cursor(window, offset):
         info, remaining = window.render_info, offset
@@ -100,8 +106,7 @@ def choose(started, q, position, misses, navigate=True, choice=-1, back=True):
     options = RadioList([(i, partial(option, i, text)) for i, text in enumerate(q["choices"])], default=q.get("selected", choice), select_on_focus=True, open_character="", select_character=">", close_character="", show_numbers=True, show_cursor=False, show_scrollbar=False)
     options.window.wrap_lines = Condition(lambda: True)
     bindings = KeyBindings()
-    def status():
-        return [("", "%02d:%02d" % divmod(max(0, int(time.monotonic() - started)), 60)), separator, ("", position.replace(" ", "")), separator, button(f"Wrong: {len(misses)}", "7")]
+    status = lambda: [("", "%02d:%02d" % divmod(max(0, int(time.monotonic() - started)), 60)), separator, ("", position.replace(" ", "")), separator, button(f"Wrong: {len(misses)}", "7")]
 
     def handle(key, event, enabled=True):
         nonlocal message, line, note_line
@@ -143,7 +148,7 @@ def choose(started, q, position, misses, navigate=True, choice=-1, back=True):
         shortcut = {"left": "←", "right": "→"}.get(key, key)
         return ("class:button" if enabled else "class:muted", f"{text}({shortcut})", partial(handle, key, enabled=enabled))
 
-    rows = [i for i, text in enumerate(q["choices"]) for _ in range(text.count("\n") + 1)]
+    rows = [i for i, text in enumerate(q["choices"]) for _ in text.split("\n")]
     def click(event):
         if not 0 <= event.position.y < len(rows):
             return NotImplemented
@@ -168,7 +173,7 @@ def choose(started, q, position, misses, navigate=True, choice=-1, back=True):
     def section(text, visible, style=""):
         return ConditionalContainer(HSplit([HorizontalLine(), text if isinstance(text, Window) else Label(text, style=style)]), filter=Condition(visible))
     message_window, note_window = text_window(lambda: message or "", lambda: line), text_window(lambda: note(q), lambda: note_line)
-    body = [Label(q["question"], style="bold"), options, section("Tags: " + ", ".join(q.get("tags") or []), lambda: bool(q.get("tags")), "class:muted"), section(lambda: details(q, choice, "answer" in shown), lambda: choice != -1 or "answer" in shown), section(note_window, lambda: "note" in shown)]
+    body = [Label(q["question"], style="bold"), options, section("Tags: " + ", ".join(q.get("tags", [])), lambda: bool(q.get("tags")), "class:muted"), section(lambda: details(q, choice, "answer" in shown), lambda: choice != -1 or "answer" in shown), section(note_window, lambda: "note" in shown)]
     actions = lambda: [button("Note", "8", not message), separator, button("Reveal", "9", not message and "answer" not in shown), separator, button("End", "0")] if navigate else [button("Exit", "0")]
     navigation = [("class:muted", "│ "), button("Back", "left", back), separator, button("Next", "right"), ("class:muted", " │")]
     nav_width = sum(len(part[1]) for part in navigation)
@@ -193,7 +198,7 @@ def review(misses):
     return heading + [part for q, chosen in misses for part in [("", f"\n{q['question']}\n"), *details(q, chosen), ("", "\n")]]
 
 def message(text):
-    choose(None, dict(question="", choices=[""], message=text), "", [], navigate=False)
+    menu("", [""], message=text)
 
 def session(questions, answers):
     return [(q, choice) for q, choice in zip(questions, answers) if q["answer"] is not None and choice not in (-1, q["answer"])]
@@ -201,7 +206,7 @@ def session(questions, answers):
 def test(data, bank):
     if not bank:
         return message("No questions match these filters.")
-    tracking = data.setdefault("tracking", {})
+    tracking = data["tracking"]
     count, index, started = len(bank), 0, time.monotonic()
     questions, answers = random.sample(bank, count), [-1] * count
     total = sum(q["answer"] is not None for q in questions)
@@ -223,13 +228,13 @@ def test(data, bank):
     text = [("bold", ("Completed" if not total else "Passed" if correct >= 0.8 * total else "Keep practicing") + "\n"), ("", f"{correct} of {total} correct." + (" Ended early." if index < count else "") + "\n\n"), *review(session(questions, answers)), ("", "\n"), ("bold", f"Unviewed: {unviewed}")]
     message(text)
 
-def menu(title, labels, end="Back", selected=-1, states=None, notice=""):
+def menu(title, labels, end="Back", **options):
     with suppress(EndTest):
-        return choose(None, dict(question=title, choices=labels, selected=selected, states=states, notice=notice), "", [], navigate=False, back=end == "Back")
+        return choose(None, dict(question=title, choices=labels, **options), navigate=False, back=end == "Back")
 
 def filters_for(q, tracking):
     row = tracking.get(q["id"], {})
-    return {("history", title) for title, field, present in HISTORY if bool(row.get(field)) == present} | {("tag", t) for t in q.get("tags") or []} | {("source", s["name"]) for s in q.get("sources", []) if s.get("name")}
+    return {("history", title) for title, field, present in HISTORY if bool(row.get(field)) == present} | {("tag", t) for t in q.get("tags", [])} | {("source", s["name"]) for s in q.get("sources", []) if s.get("name")}
 
 def pool(bank, included=(), excluded=EXCLUDED, tracking=None):
     included, excluded, tracking = set(included), set(excluded), tracking or {}
@@ -246,7 +251,7 @@ def load_filters(data):
     return included - excluded, excluded
 
 def filter_menu(data, included, excluded):
-    bank, tracking = data["questions"], data.get("tracking", {})
+    bank, tracking = data["questions"], data["tracking"]
     counts, chosen = Counter(t for q in bank for t in filters_for(q, tracking)), 0
     filters = [("history", title) for title, _, _ in HISTORY] + sorted((t for t in counts if t[0] != "history"), key=lambda t: (t[0] != "tag", t[1]))
     while True:
@@ -272,24 +277,22 @@ def filter_menu(data, included, excluded):
 
 def main():
     data = json.loads(BANK.read_text(encoding="utf-8-sig"))
-    bank, tracking = data["questions"], data.setdefault("tracking", {})
+    bank, tracking = data["questions"], data["tracking"]
     included, excluded = load_filters(data)
     if any(not 2 <= len(q["choices"]) <= 4 or q["answer"] is not None and (type(q["answer"]) is not int or q["answer"] not in range(len(q["choices"]))) for q in bank):
         raise ValueError("Each question needs 2-4 choices and a valid answer index or null.")
     if not sys.stdin.isatty():
         raise ValueError("Run this script in an interactive terminal.")
-    notice = ""
     with suppress(KeyboardInterrupt):
-        while (action := menu(f"Questions: {len(pool(bank, included, excluded, tracking))}", ["Start", "Reset", "Filters", "Build HTML"], end="Exit", notice=notice)) is not None:
+        while (action := menu(f"Questions: {len(selected_bank := pool(bank, included, excluded, tracking))}", ["Start", "Reset", "Filters"], end="Exit")) is not None:
             if action == 0:
-                test(data, pool(bank, included, excluded, tracking))
+                test(data, selected_bank)
             elif action == 1:
                 selected, status = 0, ""
                 while (selected := menu("Reset", [f"{title} ({len(pool(bank, [('history', title)], (), tracking))})" for title, _, _ in HISTORY], selected=selected, notice=status)) is not None:
                     status = reset(data, HISTORY[selected][0].lower())
             elif action == 2:
                 filter_menu(data, included, excluded)
-            notice = build_html(data) if action == 3 else ""
 
 if __name__ == "__main__":
     main()

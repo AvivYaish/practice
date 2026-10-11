@@ -1,7 +1,7 @@
 {
+  "save_html": true,
   "metadata": {
     "title": "Practice Test Demo",
-    "version": 2,
     "description": "A sample Q&A DB.",
     "answer_format": "Zero-based choice index, or null for an unscored question.",
     "statuses": {
