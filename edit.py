@@ -32,7 +32,7 @@ def record(data, ids=()):
 
 def validate(q):
     choices, answer, tags = q.get("choices"), q.get("answer"), q.get("tags", [])
-    if not isinstance(q.get("id"), str) or not q["id"].strip() or not isinstance(q.get("question"), str) or not q["question"].strip():
+    if any(not isinstance(q.get(key), str) or not q[key].strip() for key in ("id", "question")):
         raise ValueError("A question needs an ID and text.")
     if not isinstance(choices, list) or not 2 <= len(choices) <= 4 or any(not isinstance(c, str) or not c.strip() for c in choices) or len({" ".join(c.split()).casefold() for c in choices}) != len(choices):
         raise ValueError("Use 2-4 distinct, nonblank choices.")
@@ -76,12 +76,10 @@ def tag_change(data, old, new=None, description=None):
     previous = definitions.pop(old, "") if old != new else definitions.get(old, "")
     if new is not None:
         definitions[new] = description if description is not None else definitions.get(new, previous)
-    touched = []
-    for q in data["questions"]:
-        if old is not None and old != new and old in q.get("tags", []):
-            q["tags"] = list(dict.fromkeys(new if t == old else t for t in q["tags"] if t != old or new is not None))
-            touched.append(q["id"])
-    record(data, touched)
+    affected = [q for q in data["questions"] if old is not None and old != new and old in q.get("tags", [])]
+    for q in affected:
+        q["tags"] = list(dict.fromkeys(new if t == old else t for t in q["tags"] if t != old or new is not None))
+    record(data, (q["id"] for q in affected))
     return True
 
 def commit(data):
@@ -100,7 +98,7 @@ def question_form(data, original=None):
     answer = ask(f"Answer (1-{count}, blank = Unscored): ", "" if q["answer"] is None else q["answer"] + 1, lambda text: not text or text in map(str, range(1, count + 1)))
     q["answer"] = int(answer) - 1 if answer else None
     q["topic"] = ask("Topic: ", q.get("topic", ""))
-    q["tags"] = list(dict.fromkeys(t.strip() for t in ask("Tags (comma-separated): ", ", ".join(q["tags"])).split(",") if t.strip()))
+    q["tags"] = [t.strip() for t in ask("Tags (comma-separated): ", ", ".join(q["tags"])).split(",") if t.strip()]
     q["note"] = ask("Note: ", q.get("note", ""))
     if menu("Save question?", ["Save", "Cancel"]) == 0:
         put_question(data, q)

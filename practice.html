@@ -10,6 +10,7 @@
 :root{color-scheme:light dark;font:16px/1.5 system-ui,sans-serif;--page:#f5f7fb;--surface:#fff;--soft:#edf1f7;--border:#d3dce9;--ink:#142238;--muted:#586780;--navy:#17345f;--focus:#6589bd;--correct:#edf4ff;--correct-border:#35649d;--check:#18703a;--wrong:#fff1f0;--wrong-border:#b94751;background:var(--page);color:var(--ink)}
 @media(prefers-color-scheme:dark){:root{--page:#0b1220;--surface:#121d2f;--soft:#1a2942;--border:#30425e;--ink:#e8eef8;--muted:#afbdd2;--navy:#244778;--focus:#93b7ef;--correct:#1a3252;--correct-border:#83aff0;--check:#81d59b;--wrong:#38202b;--wrong-border:#df8590}}
 *{box-sizing:border-box}body{margin:0}main{max-width:760px;margin:auto;padding:24px 20px 40px}header{text-align:center;font-size:24px;font-weight:650;margin-bottom:18px}header button{padding:0;border:0;background:none}
+#dropHint{display:none;position:fixed;inset:12px;z-index:10;place-items:center;border:2px dashed var(--focus);border-radius:16px;background:var(--surface);opacity:.96;font-size:24px;font-weight:650;pointer-events:none}body.dragging #dropHint{display:grid}
 .card,dialog{background:var(--surface);border:1px solid var(--border);border-radius:16px}.card{padding:clamp(22px,4vw,34px)}
 h1{font-size:28px;margin:0 0 12px}h2{font-size:24px;line-height:1.4;margin:16px 0;outline:none;overflow-wrap:anywhere}p{margin:10px 0}
 .control-row>span,#tag>span:first-child,#tagFilters>span{color:var(--muted)}
@@ -71,6 +72,7 @@ dialog.note{position:fixed;inset:auto 12px;margin:0 auto;box-shadow:0 12px 40px 
     </section>
   </div>
 </main>
+<div id="dropHint" role="status">Drop JSON to load</div>
 <dialog id="popup" aria-labelledby="popupTitle">
   <div class="dialog-bar"><h2 id="popupTitle"></h2><button onclick="dialog.close()">Close</button></div>
   <div id="popupBody"></div>
@@ -98,7 +100,7 @@ dialog.note{position:fixed;inset:auto 12px;margin:0 auto;box-shadow:0 12px 40px 
     <button class="primary">Save question</button>
   </form>
 </dialog>
-<script id="data" type="application/json">{"metadata":{"title":"Practice Test Demo","version":2,"description":"Public demo. Questions and sample history were created for this example. Source links are placeholders, not published question sources. No personal practice history is included.","answer_format":"Zero-based choice index, or null for an unscored question.","statuses":{"confirmed":"Answer checked for this demo.","not_checked":"Unscored demonstration."},"tag_definitions":{"Basics":"Simple questions across topics.","Math":"Arithmetic and numbers.","Words":"Language and punctuation.","Everyday":"Time and everyday concepts.","Shapes":"Basic geometry.","Reading":"Longer question text.","AI":"Demonstrates a tag excluded by default.","Unreliable":"Unscored examples, excluded by default."}},"questions":[{"id":"DEMO01","question":"What is 2 + 2?","choices":["3","4","5","6"],"answer":1,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"1","note":"Placeholder source for demonstrating source fields and filters."},{"name":"Example cards","url":"https://example.com/cards","question_id":"1"}],"note":"Adding two pairs gives four. The reference link below is a placeholder.","validation":{"status":"confirmed","references":[{"url":"https://example.com/workbook","label":"Example reference"}]}},{"id":"DEMO02","question":"What is half of 10?","choices":["5","8"],"answer":0,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"2"},{"name":"Example cards","url":"https://example.com/cards","question_id":"2"}],"note":"Ten divided into two equal groups gives five in each group.","validation":{"status":"confirmed"}},{"id":"DEMO03","question":"What is 3 times 4?","choices":["7","12","14"],"answer":1,"topic":"Math","tags":["Math"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"3"}],"note":"Three groups of four contain twelve items.","validation":{"status":"confirmed"}},{"id":"DEMO04","question":"Which number is even?","choices":["3","8","9","11"],"answer":1,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"4"},{"name":"Example cards","url":"https://example.com/cards","question_id":"4"}],"note":"An even number is divisible by two without a remainder.","validation":{"status":"confirmed"}},{"id":"DEMO05","question":"Which letter comes first in the English alphabet?","choices":["A","B","C"],"answer":0,"topic":"Words","tags":["Words","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"5"}],"note":"The English alphabet begins A, B, C.","validation":{"status":"confirmed"}},{"id":"DEMO06","question":"Which word means the opposite of hot?","choices":["Cold","Bright","Loud"],"answer":0,"topic":"Words","tags":["Words"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"6"},{"name":"Example cards","url":"https://example.com/cards","question_id":"6"}],"note":"Hot and cold describe opposite ends of a temperature range.","validation":{"status":"confirmed"}},{"id":"DEMO07","question":"Which punctuation mark usually ends a direct question?","choices":[".","?","!"],"answer":1,"topic":"Words","tags":["Words"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"7"}],"note":"A question mark usually ends a direct question.","validation":{"status":"confirmed"}},{"id":"DEMO08","question":"Which day comes immediately after Monday?","choices":["Friday","Tuesday","Wednesday","Sunday"],"answer":1,"topic":"Everyday","tags":["Everyday","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"8"},{"name":"Example cards","url":"https://example.com/cards","question_id":"8"}],"note":"The sequence begins Monday, Tuesday, Wednesday.","validation":{"status":"confirmed"}},{"id":"DEMO09","question":"How many minutes are in one hour?","choices":["30","45","60","90"],"answer":2,"topic":"Everyday","tags":["Everyday"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"9"}],"note":"One hour contains sixty minutes.","validation":{"status":"confirmed"}},{"id":"DEMO10","question":"How many corners does a triangle have?","choices":["2","3","4"],"answer":1,"topic":"Shapes","tags":["Shapes","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"10"},{"name":"Example cards","url":"https://example.com/cards","question_id":"10"}],"note":"A triangle has three sides and three corners.","validation":{"status":"confirmed"}},{"id":"DEMO11","question":"Which shape has no corners?","choices":["Circle","Square"],"answer":0,"topic":"Shapes","tags":["Shapes"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"11"}],"note":"A circle has a continuous curved boundary and no corners.","validation":{"status":"confirmed"}},{"id":"DEMO12","question":"A box contains two red tiles and three blue tiles. You add one more blue tile without removing anything. Counting tiles of both colors, how many tiles are now in the box?","choices":["5","6","7","8"],"answer":1,"topic":"Math","tags":["Math","Reading"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"12"},{"name":"Example cards","url":"https://example.com/cards","question_id":"12"}],"note":"Start with two red tiles and three blue tiles: 2 + 3 = 5.\nAdd one blue tile: 5 + 1 = 6.\nThe colors do not change the total. This longer example demonstrates wrapping and multiline notes.","validation":{"status":"confirmed"}},{"id":"DEMO13","question":"What is 9 - 4?","choices":["4","5","6"],"answer":1,"topic":"Math","tags":["Math","AI"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"13"}],"note":"Nine minus four is five. This example demonstrates the AI tag, which is excluded by default.","validation":{"status":"confirmed"}},{"id":"DEMO14","question":"Which season is the best?","choices":["Spring","Summer","Autumn","Winter"],"answer":null,"topic":"Everyday","tags":["Everyday","Unreliable"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"14"},{"name":"Example cards","url":"https://example.com/cards","question_id":"14"}],"note":"This is subjective, so there is no correct answer. Any choice is unscored. Enable Unreliable to include this question.","validation":{"status":"not_checked"}}],"tracking":{"DEMO01":{"viewed":"2026-01-01T12:00:00Z","wrong":[{"at":"2026-01-01T12:01:00Z","answer":"3"},{"at":"2026-01-02T12:01:00Z","answer":"5"}]},"DEMO02":{"viewed":"2026-01-01T12:02:00Z"},"DEMO05":{"viewed":"2026-01-01T12:03:00Z","skipped":["2026-01-01T12:04:00Z"]},"DEMO08":{"viewed":"2026-01-01T12:05:00Z","wrong":[{"at":"2026-01-01T12:06:00Z","answer":"Wednesday"}]},"DEMO10":{"viewed":"2026-01-01T12:07:00Z","skipped":["2026-01-01T12:08:00Z","2026-01-02T12:08:00Z"]}}}</script>
+<script id="data" type="application/json">{"metadata":{"title":"Practice Test Demo","version":2,"description":"A sample Q&A DB.","answer_format":"Zero-based choice index, or null for an unscored question.","statuses":{"confirmed":"Answer checked for this demo.","not_checked":"Unscored demonstration."},"tag_definitions":{"Basics":"Simple questions across topics.","Math":"Arithmetic and numbers.","Words":"Language and punctuation.","Everyday":"Time and everyday concepts.","Shapes":"Basic geometry.","Reading":"Longer question text.","AI":"Demonstrates a tag excluded by default.","Unreliable":"Unscored examples, excluded by default."}},"questions":[{"id":"DEMO01","question":"What is 2 + 2?","choices":["3","4","5","6"],"answer":1,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"1","note":"Placeholder source for demonstrating source fields and filters."},{"name":"Example cards","url":"https://example.com/cards","question_id":"1"}],"note":"Adding two pairs gives four. The reference link below is a placeholder.","validation":{"status":"confirmed","references":[{"url":"https://example.com/workbook","label":"Example reference"}]}},{"id":"DEMO02","question":"What is half of 10?","choices":["5","8"],"answer":0,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"2"},{"name":"Example cards","url":"https://example.com/cards","question_id":"2"}],"note":"Ten divided into two equal groups gives five in each group.","validation":{"status":"confirmed"}},{"id":"DEMO03","question":"What is 3 times 4?","choices":["7","12","14"],"answer":1,"topic":"Math","tags":["Math"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"3"}],"note":"Three groups of four contain twelve items.","validation":{"status":"confirmed"}},{"id":"DEMO04","question":"Which number is even?","choices":["3","8","9","11"],"answer":1,"topic":"Math","tags":["Math","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"4"},{"name":"Example cards","url":"https://example.com/cards","question_id":"4"}],"note":"An even number is divisible by two without a remainder.","validation":{"status":"confirmed"}},{"id":"DEMO05","question":"Which letter comes first in the English alphabet?","choices":["A","B","C"],"answer":0,"topic":"Words","tags":["Words","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"5"}],"note":"The English alphabet begins A, B, C.","validation":{"status":"confirmed"}},{"id":"DEMO06","question":"Which word means the opposite of hot?","choices":["Cold","Bright","Loud"],"answer":0,"topic":"Words","tags":["Words"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"6"},{"name":"Example cards","url":"https://example.com/cards","question_id":"6"}],"note":"Hot and cold describe opposite ends of a temperature range.","validation":{"status":"confirmed"}},{"id":"DEMO07","question":"Which punctuation mark usually ends a direct question?","choices":[".","?","!"],"answer":1,"topic":"Words","tags":["Words"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"7"}],"note":"A question mark usually ends a direct question.","validation":{"status":"confirmed"}},{"id":"DEMO08","question":"Which day comes immediately after Monday?","choices":["Friday","Tuesday","Wednesday","Sunday"],"answer":1,"topic":"Everyday","tags":["Everyday","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"8"},{"name":"Example cards","url":"https://example.com/cards","question_id":"8"}],"note":"The sequence begins Monday, Tuesday, Wednesday.","validation":{"status":"confirmed"}},{"id":"DEMO09","question":"How many minutes are in one hour?","choices":["30","45","60","90"],"answer":2,"topic":"Everyday","tags":["Everyday"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"9"}],"note":"One hour contains sixty minutes.","validation":{"status":"confirmed"}},{"id":"DEMO10","question":"How many corners does a triangle have?","choices":["2","3","4"],"answer":1,"topic":"Shapes","tags":["Shapes","Basics"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"10"},{"name":"Example cards","url":"https://example.com/cards","question_id":"10"}],"note":"A triangle has three sides and three corners.","validation":{"status":"confirmed"}},{"id":"DEMO11","question":"Which shape has no corners?","choices":["Circle","Square"],"answer":0,"topic":"Shapes","tags":["Shapes"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"11"}],"note":"A circle has a continuous curved boundary and no corners.","validation":{"status":"confirmed"}},{"id":"DEMO12","question":"A box contains two red tiles and three blue tiles. You add one more blue tile without removing anything. Counting tiles of both colors, how many tiles are now in the box?","choices":["5","6","7","8"],"answer":1,"topic":"Math","tags":["Math","Reading"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"12"},{"name":"Example cards","url":"https://example.com/cards","question_id":"12"}],"note":"Start with two red tiles and three blue tiles: 2 + 3 = 5.\nAdd one blue tile: 5 + 1 = 6.\nThe colors do not change the total. This longer example demonstrates wrapping and multiline notes.","validation":{"status":"confirmed"}},{"id":"DEMO13","question":"What is 9 - 4?","choices":["4","5","6"],"answer":1,"topic":"Math","tags":["Math","AI"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"13"}],"note":"Nine minus four is five. This example demonstrates the AI tag, which is excluded by default.","validation":{"status":"confirmed"}},{"id":"DEMO14","question":"Which season is the best?","choices":["Spring","Summer","Autumn","Winter"],"answer":null,"topic":"Everyday","tags":["Everyday","Unreliable"],"sources":[{"name":"Example workbook","url":"https://example.com/workbook","question_id":"14"},{"name":"Example cards","url":"https://example.com/cards","question_id":"14"}],"note":"This is subjective, so there is no correct answer. Any choice is unscored. Enable Unreliable to include this question.","validation":{"status":"not_checked"}}],"tracking":{"DEMO01":{"viewed":"2026-01-01T12:00:00Z","wrong":[{"at":"2026-01-01T12:01:00Z","answer":"3"},{"at":"2026-01-02T12:01:00Z","answer":"5"}]},"DEMO02":{"viewed":"2026-01-01T12:02:00Z"},"DEMO05":{"viewed":"2026-01-01T12:03:00Z","skipped":["2026-01-01T12:04:00Z"]},"DEMO08":{"viewed":"2026-01-01T12:05:00Z","wrong":[{"at":"2026-01-01T12:06:00Z","answer":"Wednesday"}]},"DEMO10":{"viewed":"2026-01-01T12:07:00Z","skipped":["2026-01-01T12:08:00Z","2026-01-02T12:08:00Z"]}}}</script>
 <script>
 const $ = id => document.getElementById(id), data = JSON.parse($('data').textContent), dialog = $('popup')
 const bank = data.questions, initialTracking = data.tracking, tracking = data.tracking = Object.create(null)
@@ -126,12 +128,12 @@ function answerText(container,q,choice,showKey=true) {
     line('Answer',q.answer,'Not verified.')
   }
 }
-function questionTags(q) { return q.tags || [] }
-function questionSources(q) { return (q.sources || []).map(s => s.name).filter(name => typeof name === 'string' && name.trim()) }
-function tagNames() { return unique([...Object.keys(data.metadata?.tag_definitions || {}),...bank.flatMap(questionTags)]).sort() }
-function uniqueChoices(choices) { return unique(choices.map(s => s.trim().replace(/\s+/g,' ').toLowerCase())).length === choices.length }
-function history(q,label) { return label.toLowerCase() === 'unviewed' ? !tracking[q.id]?.viewed : !!tracking[q.id]?.[label.toLowerCase()]?.length }
-function filterTags(q) { return [...tagKeys('tag',questionTags(q)),...tagKeys('source',questionSources(q)),...tagKeys('history',labels.filter(label => history(q,label)))] }
+const questionTags = q => q.tags || []
+const questionSources = q => (q.sources || []).map(s => s.name).filter(name => typeof name === 'string' && name.trim())
+const tagNames = () => unique([...Object.keys(data.metadata?.tag_definitions || {}),...bank.flatMap(questionTags)]).sort()
+const uniqueChoices = choices => unique(choices.map(s => s.trim().replace(/\s+/g,' ').toLowerCase())).length === choices.length
+const history = (q,label) => label.toLowerCase() === 'unviewed' ? !tracking[q.id]?.viewed : !!tracking[q.id]?.[label.toLowerCase()]?.length
+const filterTags = q => [...tagKeys('tag',questionTags(q)),...tagKeys('source',questionSources(q)),...tagKeys('history',labels.filter(label => history(q,label)))]
 function included(q) {
   const tags = filterTags(q), selected = [...includedTags]
   return !tags.some(tag => excludedTags.has(tag)) && [true,false].every(history => {
@@ -139,11 +141,20 @@ function included(q) {
     return !keys.length || keys.some(tag => tags.includes(tag))
   })
 }
-function session() {
-  return answers.flatMap((choice,i) => questions[i].answer !== null && choice != null && choice !== questions[i].answer ? [{q:questions[i],choice}] : [])
+const session = () => answers.flatMap((choice,i) => questions[i].answer !== null && choice != null && choice !== questions[i].answer ? [{q:questions[i],choice}] : [])
+function restoreFilters(filters) {
+  if (!filters || !['included','excluded'].every(key => Array.isArray(filters[key]) && filters[key].every(pair => Array.isArray(pair) && pair.length === 2 && ['tag','source','history'].includes(pair[0]) && typeof pair[1] === 'string' && pair[1].trim()))) return
+  for (const [key,set] of [['included',includedTags],['excluded',excludedTags]]) { set.clear(); for (const pair of filters[key]) set.add(JSON.stringify(pair)) }
+  for (const tag of excludedTags) includedTags.delete(tag)
 }
-function save() {
-  try { localStorage.setItem(storageKey,JSON.stringify(data)) }
+function save(filtersOnly=false) {
+  data.filters = {included:[...includedTags].map(JSON.parse),excluded:[...excludedTags].map(JSON.parse)}
+  let snapshot = data
+  if (filtersOnly) {
+    try { snapshot = JSON.parse(localStorage.getItem(storageKey)) } catch { snapshot = null }
+    snapshot = {...(valid(snapshot) ? snapshot : {}),filters:data.filters}
+  }
+  try { localStorage.setItem(storageKey,JSON.stringify(snapshot)) }
   catch { alert('Could not save progress. Download the file before closing.') }
   updateTags()
 }
@@ -164,19 +175,19 @@ function updateTags() {
   for (const q of bank) for (const tag of new Set(filterTags(q))) counts.set(tag,(counts.get(tag) || 0)+1)
   $('tagOptions').replaceChildren()
   const all = bank.filter(q => !filterTags(q).some(tag => excludedTags.has(tag))).length
-  element('button',`All\n(${all})`,$('tagOptions'),{onclick:() => { includedTags.clear(); updateTags() }}).setAttribute('aria-pressed',!includedTags.size)
+  element('button',`All\n(${all})`,$('tagOptions'),{onclick:() => { includedTags.clear(); save(true) }}).setAttribute('aria-pressed',!includedTags.size)
   for (const tag of tags) {
     const [kind,label] = JSON.parse(tag), count = counts.get(tag) || 0
     if (kind === 'history') $('reset'+label).disabled = label === 'Unviewed' ? count === bank.length : !count
     const box = element('div','',$('tagOptions'),{className:'tag-option'})
     box.setAttribute('role','group'); box.setAttribute('aria-label',`${label} ${kind}`)
     const actions = element('div','',box,{className:'tag-actions'})
-    for (const [text,set,other] of [['-',excludedTags,includedTags],['+',includedTags,excludedTags],[`${label}\n(${count})`,null,null]]) {
-      const action = set === excludedTags ? 'Exclude' : set ? 'Include' : 'Clear'
+    for (const [text,set] of [['-',excludedTags],['+',includedTags],[`${label}\n(${count})`,null]]) {
+      const action = set === excludedTags ? 'Exclude' : set ? 'Include' : 'Cycle'
       const button = element('button',text,set ? actions : box,{className:set ? action.toLowerCase() : '',ariaLabel:`${action} ${label} ${kind}`,onclick:() => {
-        if (set) { other.delete(tag); if (!set.delete(tag)) set.add(tag) }
-        else { includedTags.delete(tag); excludedTags.delete(tag) }
-        updateTags()
+        const target = set ? set.has(tag) ? null : set : includedTags.has(tag) ? excludedTags : excludedTags.has(tag) ? null : includedTags
+        includedTags.delete(tag); excludedTags.delete(tag); target?.add(tag)
+        save(true)
       }})
       if (set) button.setAttribute('aria-pressed',set.has(tag))
     }
@@ -208,9 +219,10 @@ function editTag() {
   $('deleteTag').disabled = !tag
 }
 function tagList(tag=$('editTag').value) {
+  const names = tagNames()
   $('editTag').replaceChildren(); element('option','New tag',$('editTag'),{value:''})
-  for (const name of tagNames()) element('option',name,$('editTag'),{value:name})
-  $('editTag').value = tagNames().includes(tag) ? tag : ''; editTag()
+  for (const name of names) element('option',name,$('editTag'),{value:name})
+  $('editTag').value = names.includes(tag) ? tag : ''; editTag()
 }
 function openEditor() {
   $('tagEditor').open = false; $('editSearch').value = ''; editQuestion(questionList()); tagList(); $('editor').showModal()
@@ -310,7 +322,7 @@ function merge(input) {
 }
 function valid(input) {
   const array = (v,test) => v == null || Array.isArray(v) && v.every(test), string = v => typeof v === 'string', object = v => v && typeof v === 'object' && !Array.isArray(v), metadata = input?.metadata
-  return input && typeof input === 'object' && !Array.isArray(input)
+  return object(input)
     && (metadata == null || object(metadata) && (metadata.edits === undefined || Array.isArray(input.questions) && Array.isArray(metadata.edits) && metadata.edits.every(id => string(id) && id.trim()) && new Set(metadata.edits).size === metadata.edits.length)
       && (metadata.tag_definitions === undefined || object(metadata.tag_definitions) && Object.values(metadata.tag_definitions).every(string))
       && (metadata.edited_on === undefined || string(metadata.edited_on) && Number.isFinite(Date.parse(metadata.edited_on))))
@@ -323,8 +335,10 @@ function valid(input) {
       && array(p.wrong,e => e && string(e.at) && string(e.answer)) && array(p.skipped,string))
 }
 function screen(name) {
+  dialog.close()
   state = name
   for (const id of ['home','quiz','results']) $(id).hidden = id !== name
+  window.scrollTo(0,0)
 }
 function start() {
   questions = bank.filter(included)
@@ -350,7 +364,7 @@ function show(step=0) {
     if (showKey && q.answer !== null && (correct || i === choice)) marker(text,correct)
     button.disabled = choice != null
     button.className = showKey && correct ? 'correct' : showKey && q.answer !== null && i === choice ? 'wrong' : i === choice ? 'selected' : ''
-    button.onfocus = () => highlight(i); button.onclick = () => submit(i)
+    button.onfocus = () => highlight(i); button.onclick = () => advance(i)
   })
   highlight()
   $('feedback').replaceChildren(); answerText($('feedback'),q,choice,showKey)
@@ -369,17 +383,15 @@ function highlight(choice=selected) {
 function move(step) {
   highlight(selected+step); $('choices').children[selected].focus({preventScroll:true})
 }
-function submit(choice) {
-  if (state !== 'quiz' || answers[index] != null || !questions[index].choices[choice]) return
-  const q = questions[index]
-  answers[index] = selected = choice
-  if (q.answer !== null && choice !== q.answer) (tracking[q.id].wrong ||= []).push({at:new Date().toISOString(),answer:q.choices[choice]})
-  advance()
-}
-function advance() {
+function advance(choice=selected) {
   if (state !== 'quiz') return
-  if (answers[index] == null) submit(selected)
-  else if (index+1 === questions.length) finish()
+  const q = questions[index]
+  if (answers[index] == null) {
+    if (!q.choices[choice]) return
+    answers[index] = selected = choice
+    if (q.answer !== null && choice !== q.answer) (tracking[q.id].wrong ||= []).push({at:new Date().toISOString(),answer:q.choices[choice]})
+  }
+  if (index+1 === questions.length) finish()
   else show(1)
 }
 function tick() {
@@ -430,16 +442,16 @@ function render(container,rows) {
 }
 function finish(reason='') {
   if (state !== 'quiz') return
-  dialog.close(); screen('results')
+  screen('results')
   const graded = questions.filter(q => q.answer !== null).length, correct = answers.filter((choice,i) => questions[i].answer !== null && choice === questions[i].answer).length, unseen = bank.filter(q => history(q,'Unviewed')).length
   $('resultTitle').textContent = !graded ? 'Completed' : correct >= Math.ceil(graded*0.8) ? 'Passed' : 'Keep practicing'
   $('score').textContent = `${correct} of ${graded} correct. ${reason}`.trim()
   const wrong = session()
   $('missesTitle').textContent = `Wrong (${wrong.length})`; render($('misses'),wrong)
   $('unviewedTitle').textContent = `Unviewed (${unseen})`; $('unviewed').textContent = unseen ? 'Not yet viewed.' : ''
-  save(); window.scrollTo(0,0)
+  save()
 }
-function home() { dialog.close(); if (state === 'quiz') save(); screen('home'); window.scrollTo(0,0) }
+function home() { if (state === 'quiz') save(); screen('home') }
 function download() {
   save()
   const url = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'})), link = element('a')
@@ -457,7 +469,7 @@ document.addEventListener('keydown',e => {
   if (button) { button.click(); return }
   if (answers[index] != null) { if (key === 'Enter') advance(); return }
   if (step) move(step)
-  else submit(key === 'Enter' ? selected : Number(key)-1)
+  else advance(key === 'Enter' ? selected : Number(key)-1)
 })
 document.addEventListener('wheel',e => {
   if (e.ctrlKey || dialog.open || $('editor').open || state !== 'quiz' || answers[index] != null || !e.deltaY) return
@@ -468,18 +480,35 @@ dialog.onclick = e => {
   if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dialog.close()
 }
 dialog.oncancel = e => { e.preventDefault(); finish('Ended early.') }
-$('import').onchange = async e => {
+async function load(file) {
+  if (!file) return
   try {
-    const input = JSON.parse(await e.target.files[0].text())
+    const input = JSON.parse(await file.text())
     if (!valid(input)) throw Error()
-    merge(input); if (Array.isArray(input.metadata?.edits)) touched(); save()
+    merge(input); restoreFilters(input.filters); if (Array.isArray(input.metadata?.edits)) touched(); screen('home'); save()
   } catch { alert('Could not load this file. New questions require a v2 db_dummy.json.') }
-  e.target.value = ''
+}
+$('import').onchange = e => { load(e.target.files[0]); e.target.value = '' }
+let dragDepth = 0
+function clearDrop() { dragDepth = 0; document.body.classList.remove('dragging') }
+document.ondragenter = e => { if (e.dataTransfer.types.includes('Files')) { dragDepth++; document.body.classList.add('dragging') } }
+document.ondragover = e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; document.body.classList.add('dragging') } }
+document.ondragleave = () => { if (--dragDepth <= 0) clearDrop() }
+document.ondragend = clearDrop
+window.addEventListener('blur',clearDrop)
+document.ondrop = async e => {
+  clearDrop()
+  const files = [...e.dataTransfer.files]
+  if (!files.length) return
+  e.preventDefault()
+  for (const file of files) if (/\.json$/i.test(file.name)) await load(file)
 }
 let saved
 try { saved = JSON.parse(localStorage.getItem(storageKey)) } catch {}
+restoreFilters(data.filters)
 merge({tracking:initialTracking})
 if (saved && valid(saved)) merge((Date.parse(data.metadata?.edited_on) || 0) > (Date.parse(saved.metadata?.edited_on) || 0) ? {tracking:saved.tracking} : saved)
+restoreFilters(saved?.filters)
 updateTags()
 setInterval(tick,250); document.addEventListener('visibilitychange',tick)
 window.addEventListener('resize',positionNote); window.addEventListener('scroll',positionNote,{passive:true})

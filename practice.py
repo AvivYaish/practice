@@ -151,9 +151,7 @@ def choose(started, q, position, misses, navigate=True, choice=-1, back=True):
         if states and event.button == MouseButton.LEFT and event.event_type == MouseEventType.MOUSE_UP:
             options._selected_index = options.current_value = i
             column = event.position.x - len(f"{i + 1:2d}. ") - 2
-            if i and column in (0, 1):
-                return handle("-+"[column], event)
-            return handle("enter", event)
+            return handle("-+"[column] if i and column in (0, 1) else "enter", event)
         return handle(str(i + 1), event)
     options.control.mouse_handler = click
 
@@ -212,13 +210,11 @@ def test(data, bank):
             q = questions[index]
             tracking.setdefault(q["id"], {}).setdefault("viewed", now())
             chosen = choose(started, q, f"{index + 1} / {count}", session(questions, answers), choice=answers[index])
-            if chosen in ("back", "next"):
-                index += -1 if chosen == "back" else 1
-                continue
-            answers[index] = chosen
-            if q["answer"] is not None and chosen != q["answer"]:
-                tracking[q["id"]].setdefault("wrong", []).append({"at": now(), "answer": q["choices"][chosen]})
-            index += 1
+            if chosen not in ("back", "next"):
+                answers[index] = chosen
+                if q["answer"] is not None and chosen != q["answer"]:
+                    tracking[q["id"]].setdefault("wrong", []).append({"at": now(), "answer": q["choices"][chosen]})
+            index += -1 if chosen == "back" else 1
     save(data)
     if index < 0:
         return
@@ -285,7 +281,6 @@ def main():
     notice = ""
     with suppress(KeyboardInterrupt):
         while (action := menu(f"Questions: {len(pool(bank, included, excluded, tracking))}", ["Start", "Reset", "Filters", "Build HTML"], end="Exit", notice=notice)) is not None:
-            notice = ""
             if action == 0:
                 test(data, pool(bank, included, excluded, tracking))
             elif action == 1:
@@ -294,8 +289,7 @@ def main():
                     status = reset(data, HISTORY[selected][0].lower())
             elif action == 2:
                 filter_menu(data, included, excluded)
-            else:
-                notice = build_html(data)
+            notice = build_html(data) if action == 3 else ""
 
 if __name__ == "__main__":
     main()
