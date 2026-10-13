@@ -28,8 +28,8 @@ def save(data, path=None):
     if data.get("save_html") is True:
         page = path.with_name("practice.html")
         try:
-            payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
-            html, count = re.subn(r'(<script id="data" type="application/json">).*?(</script>)', lambda m: m[1] + payload + m[2], page.read_text(encoding="utf-8"), count=1, flags=re.S)
+            payload = json.dumps(data, ensure_ascii=False, indent=2).replace("<", "\\u003c")
+            html, count = re.subn(r'(<script id="data" type="application/json">).*?(</script>)', lambda m: m[1] + "\n" + payload + "\n" + m[2], page.read_text(encoding="utf-8"), count=1, flags=re.S)
             if not count:
                 raise ValueError("Missing data block.")
             write(page, html)
